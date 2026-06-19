@@ -1,4 +1,4 @@
-# BrightBank — Self-Service Customer Lookup Kiosk
+# ABC Bank — Self-Service Customer Lookup Kiosk
 
 A small Flask app that lets a bank customer scan their ID (Aadhaar, PAN, or Driving
 License) at a kiosk and instantly see their account balance, deposits, loans, gold
