@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}Your Account Summary{% endblock %}
+{% block content %}
+
+<div class="welcome-card">
+    <h2>Welcome, {{ customer.full_name }}</h2>
+    <p class="hint">CIF: {{ customer.cif }} &middot; {{ customer.home_branch }} &middot; Customer since {{ customer.customer_since }}</p>
+</div>
+
+<h3 class="section-title">Accounts & Balances</h3>
+<div class="grid">
+    {% for a in accounts %}
+    <div class="data-card">
+        <p class="data-label">{{ a.account_type }} — {{ a.account_number }}</p>
+        <p class="data-value">₹{{ "%.0f"|format(a.current_balance) }}</p>
+        <p class="hint">Available: ₹{{ "%.0f"|format(a.available_balance) }} &middot; Status: {{ a.status }}</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% if deposits %}
+<h3 class="section-title">Deposits (FD / RD)</h3>
+<div class="grid">
+    {% for d in deposits %}
+    <div class="data-card">
+        <p class="data-label">{{ d.deposit_type }} — {{ d.deposit_account_no }}</p>
+        <p class="data-value">₹{{ "%.0f"|format(d.principal_installment) }}</p>
+        <p class="hint">{{ d.interest_rate }} &middot; Matures {{ d.maturity_date }} &middot; Value ₹{{ "%.0f"|format(d.maturity_value) }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if gold %}
+<h3 class="section-title">Gold Loans & Deposits</h3>
+<div class="grid">
+    {% for g in gold %}
+    <div class="data-card">
+        <p class="data-label">{{ g.product_type }} — {{ g.gold_account_no }}</p>
+        <p class="data-value">{{ g.gold_weight_purity }}</p>
+        <p class="hint">
+            {% if g.outstanding_balance %}Outstanding: ₹{{ "%.0f"|format(g.outstanding_balance) }} &middot; {% endif %}
+            {{ g.interest_rate }} &middot; {{ g.tenure }} &middot; {{ g.status }}
+        </p>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if loans %}
+<h3 class="section-title">Loans</h3>
+<div class="grid">
+    {% for l in loans %}
+    <div class="data-card">
+        <p class="data-label">{{ l.loan_type }} — {{ l.loan_account_no }}</p>
+        <p class="data-value">₹{{ "%.0f"|format(l.outstanding_principal) }} outstanding</p>
+        <p class="hint">EMI ₹{{ "%.0f"|format(l.emi) }} due {{ l.next_emi_due }} &middot; {{ l.interest_rate }}</p>
+        <p class="hint eligibility">{{ l.eligibility_note }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if cards %}
+<h3 class="section-title">Cards</h3>
+<div class="grid">
+    {% for c in cards %}
+    <div class="data-card">
+        <p class="data-label">{{ c.card_type }} ({{ c.variant }})</p>
+        <p class="data-value">{{ c.card_number_masked }}</p>
+        {% if c.credit_limit %}
+        <p class="hint">Limit ₹{{ "%.0f"|format(c.credit_limit) }} &middot; Outstanding ₹{{ "%.0f"|format(c.outstanding) }} &middot; Due {{ c.due_date }}</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if investments %}
+<h3 class="section-title">Other Investments</h3>
+<div class="grid">
+    {% for i in investments %}
+    <div class="data-card">
+        <p class="data-label">{{ i.product }} — {{ i.account_folio_no }}</p>
+        <p class="data-value">{{ i.balance_summary }}</p>
+        <p class="hint">{{ i.details }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if interest %}
+<h3 class="section-title">Interest & Charges ({{ interest.period }})</h3>
+<div class="grid">
+    <div class="data-card">
+        <p class="data-label">Interest Earned</p>
+        <p class="data-value">₹{{ "%.0f"|format(interest.interest_earned) }}</p>
+    </div>
+    <div class="data-card">
+        <p class="data-label">Interest Charged</p>
+        <p class="data-value">₹{{ "%.0f"|format(interest.interest_charged) }}</p>
+    </div>
+    <div class="data-card">
+        <p class="data-label">TDS Deducted</p>
+        <p class="data-value">₹{{ "%.0f"|format(interest.tds_deducted) }}</p>
+        <p class="hint">{{ interest.form15g_status }}</p>
+    </div>
+</div>
+{% endif %}
+
+{% if transactions %}
+<h3 class="section-title">Recent Transactions</h3>
+<table class="txn-table">
+    <thead><tr><th>Date</th><th>Narration</th><th>Type</th><th>Amount</th><th>Balance</th></tr></thead>
+    <tbody>
+        {% for t in transactions %}
+        <tr>
+            <td>{{ t.txn_date }}</td>
+            <td>{{ t.narration }}</td>
+            <td>{{ t.txn_type }}</td>
+            <td>₹{{ "%.0f"|format(t.amount) }}</td>
+            <td>₹{{ "%.0f"|format(t.running_balance) }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+<a class="btn btn-secondary" href="{{ url_for('home') }}">&larr; Done</a>
+{% endblock %}
